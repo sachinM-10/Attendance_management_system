@@ -1,0 +1,13 @@
+# Target & Build outputs
+target/
+dist/
+node_modules/
+.mvn/
+*.jar
+*.class
+*.log
+.DS_Store
+.idea/
+*.iml
+.vscode/
+scratch/
