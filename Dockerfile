@@ -24,7 +24,7 @@ COPY --from=frontend-builder /app/frontend/dist ./src/main/resources/static
 
 RUN mvn clean package -DskipTests
 
-# Stage 3: Minimal Production JRE Runtime
+# Stage 3: Minimal Production JRE Runtime (Tuned for Railway Memory Limits)
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
@@ -37,4 +37,5 @@ EXPOSE 8080
 ENV PORT=8080
 ENV SPRING_PROFILES_ACTIVE=prod
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Memory optimization for cloud containers (max 75% container RAM)
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:InitialRAMPercentage=50.0", "-jar", "app.jar"]
