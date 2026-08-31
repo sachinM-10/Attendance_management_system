@@ -8,10 +8,10 @@ export default defineConfig({
     sourcemap: false
   },
   server: {
-    port: 3000,
+    port: 5000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         secure: false
       }

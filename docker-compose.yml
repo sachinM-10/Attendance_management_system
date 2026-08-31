@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # MySQL Database Container
+  mysql_db:
+    image: mysql:8.0
+    container_name: leave_app_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: leave_management_app
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot Backend API Container
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: leave_app_backend
+    restart: always
+    depends_on:
+      mysql_db:
+        condition: service_healthy
+    environment:
+      PORT: 8080
+      DB_URL: jdbc:mysql://mysql_db:3306/leave_management_app?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_DRIVER: com.mysql.cj.jdbc.Driver
+      DB_USERNAME: appuser
+      DB_PASSWORD: apppassword
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250655368566D5971
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "8080:8080"
+
+  # React Frontend Container (Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: leave_app_frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "5000:80"
+
+volumes:
+  mysql_data:

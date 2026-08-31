@@ -53,7 +53,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
+                        auth.requestMatchers("/", "/index.html", "/assets/**", "/*.css", "/*.js", "/*.ico", "/*.png", "/*.svg", "/favicon.ico").permitAll()
+                            .requestMatchers("/api/auth/**").permitAll()
                             .requestMatchers("/h2-console/**").permitAll()
                             .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                             .requestMatchers("/api/leaves/pending", "/api/leaves/*/approve", "/api/leaves/*/reject", "/api/attendance/team").hasAnyAuthority("ROLE_MANAGER", "ROLE_ADMIN")
