@@ -1,20 +1,14 @@
 # Multi-stage Dockerfile for Spring Boot Backend
-
-# Stage 1: Build Application JAR
 FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
 WORKDIR /app
 
-# Copy Maven POM and wrapper
+# Copy Maven POM and download dependencies
 COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
-
-# Download dependencies (caching layer)
-RUN ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 # Copy source code and build production artifact
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Stage 2: Production Runtime
 FROM eclipse-temurin:21-jre-alpine
